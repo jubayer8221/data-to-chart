@@ -53,9 +53,14 @@ export default function UploadZone() {
 
   return (
     <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-semibold text-center">
+          Online EXCEL, PDF and Data Image to CHART Converter
+        </h1>
+      </div>
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-8 text-center m-auto cursor-pointer w-[600px] transition-colors ${
           isDragActive
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 hover:border-blue-400"

@@ -18,7 +18,7 @@ function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <nav className="bg-blue-900 text-white shadow-md w-full">
+    <nav className="bg-blue-900 text-white shadow-md w-full px-[100px]">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Brand */}
         <Link href="/" className="text-2xl font-bold">

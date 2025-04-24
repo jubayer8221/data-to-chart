@@ -41,7 +41,7 @@ export function Chart({ data }) {
   const colors = ["#0A3A66", "#1E6FB9", "#4A90E2", "#7FB6F0"];
 
   return (
-    <div className="py-6 my-2">
+    <div className="py-6 my-2 rounded-md mx-[100px] border-1">
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={data}
