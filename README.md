@@ -47,27 +47,13 @@ src/
 3. Run the development server
    npm run dev
 
-4. Open http://localhost:3000 in your browser.
+4. Open https://data-to-chart-dusky.vercel.app/ in your browser.
 
-## 📸 Screenshots
-
-(Add screenshots or screen recordings showing sorting, animations, export options, etc.)
-
-## 🔮 Future Improvements
-
-- Export to Excel/CSV
-- Advanced filtering & global search
-- Pagination controls
-- Role-based access for table actions
 
 ## 🧑‍💻 Author
 
 **Jubayer Al Mahmud**  
 BSc in CSE, Green University of Bangladesh  
 🌱 Passionate about Web Development, AI, and Cybersecurity  
-📫 LinkedIn: https://www.linkedin.com/in/jubayer-ai/  
-📧 Email: your.email@example.com
-
-## 📄 License
-
-This project is licensed under the MIT License.
+📫 LinkedIn: https://www.linkedin.com/in/jubayer-al-mahmud-372883225/ 
+📧 Email: jubayer8221@gmail.com
