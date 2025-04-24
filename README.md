@@ -1,3 +1,4 @@
+# DATA TO CHART
 # 🧾 Data Table with Export & State Management
 
 A dynamic and responsive data table built with **Next.js**, **Redux Toolkit**, and **Tailwind CSS**, featuring sorting, real-time updates, row animations, export options, and persistent state management using **redux-persist**.
