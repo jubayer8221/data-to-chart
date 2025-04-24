@@ -1,25 +1,29 @@
+// src/redux/store.js
 'use client';
 
 import { configureStore } from '@reduxjs/toolkit';
-// import chartReducer from './chartSlice';
-// import exportReducer from './exportSlice';
-// import chartThemeSlice from './exportSlice';
-// import recentOrderReducer from './recentOrderSlice';
-// import dataReducer from './dataSlice';
-import convertDataSlice from './slices/convertDataSlice'
-// import printReducer from './printSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import dataReducer from './slices/convertDataSlice';
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  whitelist: ['data']
+};
+
+const persistedReducer = persistReducer(persistConfig, dataReducer);
 
 export const store = configureStore({
   reducer: {
-    // charts: chartReducer,
-    // export: exportReducer,
-    // chartsTheme: chartThemeSlice,
-    // recentOrders: recentOrderReducer,
-    data: convertDataSlice,
-    // printData: printReducer,
+    data: persistedReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST'],
+      },
+    }),
 });
 
-export const useAppDispatch = () => useDispatch();
-export const useAppSelector = useSelector;
+export const persistor = persistStore(store);

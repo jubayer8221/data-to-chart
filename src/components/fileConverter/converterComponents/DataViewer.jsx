@@ -1,25 +1,21 @@
+// src/components/fileConverter/converterComponents/DataViewer.jsx
 "use client";
-import { useAppSelector } from "../../../redux/store";
-import { Table } from "../converterComponents/Table";
-import { Chart } from "../converterComponents/Chart";
 
-export function DataViewer() {
-  const data = useAppSelector((state) => state.data.data);
+import { useAppSelector } from "@/redux/hooks";
+import Table from "./Table"; // Changed to default import
+import Chart from "./Chart"; // Changed to default import
 
-  if (!data || data.length === 0) return null;
+export default function DataViewer() {
+  const { data, loading, error } = useAppSelector((state) => state.data);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data?.length) return <div>No data available</div>;
 
   return (
-    <div className="w-full">
-      {/* <h1 className="text-2xl font-bold mb-4 text-black">Data Visualizer</h1> */}
-
-      <div className="p-4 rounded-md">
-        <h1 className="text-2xl font-semibold ">Your Data as Table</h1>
-        <Table data={data} />
-      </div>
-      <div className=" p-4 rounded-md">
-        <h1 className="text-2xl font-semibold">Data as Chart</h1>
-        <Chart data={data} />
-      </div>
+    <div className="space-y-8">
+      <Table data={data} />
+      <Chart data={data} />
     </div>
   );
 }

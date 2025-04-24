@@ -1,99 +1,133 @@
+// src/components/fileConverter/converterComponents/Table.js
 "use client";
-
 import React, { useMemo } from "react";
 import {
   useReactTable,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
-// import { setDataToPrint, printData } from "../lib/printSlice";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useSelector, useDispatch } from "react-redux";
-import { setSearchTerm } from "../../../redux/slices/convertDataSlice";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setSearchTerm } from "@/redux/slices/convertDataSlice";
 
-export function Table({ data }) {
-  const dispatch = useDispatch();
-  const { filtered, searchTerm } = useSelector((state) => state.data);
+export default function Table({ data }) {
+  const dispatch = useAppDispatch();
+  const { searchTerm } = useAppSelector((state) => state.data);
 
-  const handlePrint = () => {
-    dispatch(setDataToPrint(data)); // full data, not filtered
-    dispatch(printData());
-  };
-
-  // Update search term on input
-  const handleSearch = (e) => {
-    dispatch(setSearchTerm(e.target.value));
-  };
-
-  // Add row index and dynamic columns
   const columns = useMemo(() => {
-    const dynamicCols = Object.keys(data[0] || {}).map((key) => ({
+    if (!data || data.length === 0) return [];
+
+    return Object.keys(data[0]).map((key) => ({
       header: key,
       accessorKey: key,
-    }));
-
-    return [
-      {
-        header: "#",
-        cell: ({ row }) => row.index + 1,
+      cell: ({ getValue }) => {
+        const value = getValue();
+        return typeof value === "object"
+          ? JSON.stringify(value)
+          : String(value);
       },
-      ...dynamicCols,
-    ];
+    }));
   }, [data]);
 
   const table = useReactTable({
-    data: filtered, // use filtered data for searching
+    data,
     columns,
+    state: {
+      globalFilter: searchTerm,
+    },
+    onGlobalFilterChange: (value) => dispatch(setSearchTerm(value)),
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
+  if (!data || data.length === 0) return null;
+
   return (
-    <div>
-      <div className="text-sm font-semibold text-gray-700 mt-4 flex justify-between items-center">
-        <span>Total Rows: {filtered.length}</span>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
         <Input
           type="text"
-          placeholder="Search anything..."
+          placeholder="Search data..."
           value={searchTerm}
-          onChange={handleSearch}
-          className="w-1/2"
+          onChange={(e) => dispatch(setSearchTerm(e.target.value))}
+          className="flex-1"
         />
-        <Button className="p-4" onClick={handlePrint}>
-          Print
-        </Button>
+        <div>
+          <Button>Print</Button>
+        </div>
       </div>
+      <div>
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-2 text-left font-medium text-gray-700"
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="hover:bg-gray-50">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-2 whitespace-nowrap">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      <table className="w-full border border-gray-300 shadow-lg my-4 py-2">
-        <thead className="bg-[#0A3A66]">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="p-2 border bg-[#0A3A66]/10 text-white"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-200 text-center">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-2 border">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        <div className="flex items-center space-x-2">
+          <Button
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            «
+          </Button>
+          <Button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            ‹
+          </Button>
+          <span className="text-sm">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
+          </span>
+          <Button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            ›
+          </Button>
+          <Button
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            »
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
