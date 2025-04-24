@@ -1,18 +1,19 @@
+// src/app/page.js
+
 "use client";
 
-import { UploadZone } from "@/components/fileConverter/converterComponents/UploadZone";
-import { DataViewer } from "@/components/fileConverter/converterComponents/DataViewer";
+import UploadZone from "@/components/fileConverter/converterComponents/UploadZone";
+import DataViewer from "@/components/fileConverter/converterComponents/DataViewer";
 
-export function HomePage() {
+export default function page() {
   return (
-    <main className="p-6 w-full mx-auto bg-white ">
-      <div className="mb-5 pb-6">
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
         <UploadZone />
       </div>
-      <div className="my-5 py-5">
+      <div className="my-8">
         <DataViewer />
       </div>
-    </main>
+    </div>
   );
 }
-export default HomePage;

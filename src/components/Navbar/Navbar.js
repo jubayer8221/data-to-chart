@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 
 const navLinks = [
   { name: "Home", href: "/" },
+  {name: "Excel Converter", href: "/converter/execlToChart"},
   { name: "About", href: "/page/about" },
-  { name: "Contact", href: "/contact" },
+  { name: "Contact", href: "/contact" }
 ];
 
 function Navbar() {

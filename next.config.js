@@ -1,10 +1,7 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    experimental: {
-      serverComponentsExternalPackages: ['pdfjs-dist'],
-    },
+    serverExternalPackages: ['pdfjs-dist'], // moved from experimental
     eslint: {
       ignoreDuringBuilds: true,
     },
@@ -14,3 +11,4 @@ const nextConfig = {
   }
   
   module.exports = nextConfig
+  
