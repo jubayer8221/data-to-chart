@@ -184,7 +184,7 @@ export default function Table({ data }) {
             Toggle Columns
           </Button>
           <div className="text-xs sm:text-sm font-medium text-gray-700">
-            Showing {table.getFilteredRowModel().rows.length} rows
+            Total {table.getFilteredRowModel().rows.length} rows
           </div>
         </div>
 

@@ -1,38 +1,55 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Button } from "./Button";
+import { ArrowUp } from "lucide-react";
 
 const Pagination = ({
   table,
   showAll,
   className = "",
-  pageSizeOptions = [10, 20, 50, 100],
+  pageSizeOptions = [10, 20, 50],
   showPageSizeOptions = true,
+  tableRef,
 }) => {
   const pageCount = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex + 1;
   const pageSize = table.getState().pagination.pageSize;
+  const totalRows = table.getFilteredRowModel().rows.length;
 
-  if (pageCount <= 1 && !showPageSizeOptions) {
-    return null;
-  }
+  const scrollToTop = () => {
+    if (tableRef?.current) {
+      tableRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage, shouldScroll = true) => {
     if (newPage >= 0 && newPage < pageCount) {
       table.setPageIndex(newPage);
+      if (shouldScroll) {
+        scrollToTop();
+      }
     }
   };
 
   const handlePageSizeChange = (e) => {
     const newSize = Number(e.target.value);
     table.setPageSize(newSize);
+    scrollToTop();
   };
 
   const getPageRange = () => {
     const totalPages = pageCount;
     const current = currentPage;
-    const delta = 2;
+    const delta = 1;
     const range = [];
+
+    range.push(1);
+
+    if (current - delta > 2) {
+      range.push("...");
+    }
 
     for (
       let i = Math.max(2, current - delta);
@@ -42,15 +59,9 @@ const Pagination = ({
       range.push(i);
     }
 
-    if (current - delta > 2) {
-      range.unshift("...");
-    }
-
     if (current + delta < totalPages - 1) {
       range.push("...");
     }
-
-    range.unshift(1);
 
     if (totalPages > 1) {
       range.push(totalPages);
@@ -59,80 +70,126 @@ const Pagination = ({
     return range;
   };
 
+  if (pageCount <= 1 && !showPageSizeOptions) {
+    return null;
+  }
+
   return (
     <div
-      className={`flex flex-wrap items-center gap-2 sm:gap-3 mt-4 justify-center ${className}`}
+      className={`flex flex-col sm:flex-row items-center justify-between gap-4 mt-4 ${className}`}
     >
-      <Button
-        onClick={() => handlePageChange(0)}
-        disabled={!table.getCanPreviousPage()}
-        className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
-        aria-label="First page"
-      >
-        «
-      </Button>
-      <Button
-        onClick={() => handlePageChange(currentPage - 2)}
-        disabled={!table.getCanPreviousPage()}
-        className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
-        aria-label="Previous page"
-      >
-        ‹
-      </Button>
+      {/* Page size selector and row info */}
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        {showPageSizeOptions && (
+          <>
+            <span>Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              aria-label="Select page size"
+            >
+              {pageSizeOptions.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        <span>
+          {table.getRowModel().rows.length === 0
+            ? 0
+            : (currentPage - 1) * pageSize + 1}
+          -{(currentPage - 1) * pageSize + table.getRowModel().rows.length} of{" "}
+          {totalRows}
+        </span>
+      </div>
 
-      {getPageRange().map((page, index) =>
-        page === "..." ? (
-          <span key={`ellipsis-${index}`} className="text-xs sm:text-sm px-1">
-            ...
-          </span>
-        ) : (
-          <Button
-            key={page}
-            onClick={() => handlePageChange(page - 1)}
-            className={`text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 ${
-              currentPage === page ? "font-bold bg-blue-100" : ""
-            }`}
-            aria-label={`Page ${page}`}
-            aria-current={currentPage === page ? "page" : undefined}
-          >
-            {page}
-          </Button>
-        )
-      )}
+      {/* Navigation and scroll up */}
+      <div className="flex items-center gap-2">
+        {/* Scroll to top button */}
+        <Button
+          onClick={scrollToTop}
+          className="p-2 rounded-full hover:bg-gray-100"
+          aria-label="Scroll to top"
+          title="Scroll to top"
+        >
+          <ArrowUp size={16} />
+        </Button>
 
-      <Button
-        onClick={() => handlePageChange(currentPage)}
-        disabled={!table.getCanNextPage()}
-        className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
-        aria-label="Next page"
-      >
-        ›
-      </Button>
-      <Button
-        onClick={() => handlePageChange(pageCount - 1)}
-        disabled={!table.getCanNextPage()}
-        className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5"
-        aria-label="Last page"
-      >
-        »
-      </Button>
+        {/* Page navigation */}
+        {!showAll && pageCount > 1 && (
+          <div className="flex items-center gap-1">
+            {/* First */}
+            <Button
+              onClick={() => handlePageChange(0)}
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 text-sm rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="First page"
+            >
+              «
+            </Button>
 
-      {showPageSizeOptions && (
-        <div className="flex items-center gap-2 ml-2">
-          <select
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            className="border rounded px-2 py-1 text-xs sm:text-sm"
-            aria-label="Select page size"
-          >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+            {/* Previous */}
+            <Button
+              onClick={() => handlePageChange(currentPage - 2, false)} // 🔥 No scroll on previous
+              disabled={!table.getCanPreviousPage()}
+              className="px-3 py-1 text-sm rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Previous page"
+            >
+              ‹
+            </Button>
+
+            {/* Page numbers */}
+            {getPageRange().map((page, index) =>
+              page === "..." ? (
+                <span
+                  key={`ellipsis-${index}`}
+                  className="px-2 py-1 text-sm text-gray-500"
+                >
+                  ...
+                </span>
+              ) : (
+                <Button
+                  key={page}
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={currentPage === page}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    currentPage === page
+                      ? "bg-blue-500 text-white font-semibold cursor-not-allowed"
+                      : "hover:bg-gray-100"
+                  }`}
+                  aria-label={`Page ${page}`}
+                  aria-current={currentPage === page ? "page" : undefined}
+                >
+                  {page}
+                </Button>
+              )
+            )}
+
+            {/* Next */}
+            <Button
+              onClick={() => handlePageChange(currentPage)}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 text-sm rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Next page"
+            >
+              ›
+            </Button>
+
+            {/* Last */}
+            <Button
+              onClick={() => handlePageChange(pageCount - 1)}
+              disabled={!table.getCanNextPage()}
+              className="px-3 py-1 text-sm rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Last page"
+            >
+              »
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -143,6 +200,7 @@ Pagination.propTypes = {
   className: PropTypes.string,
   pageSizeOptions: PropTypes.arrayOf(PropTypes.number),
   showPageSizeOptions: PropTypes.bool,
+  tableRef: PropTypes.object,
 };
 
 export default Pagination;
