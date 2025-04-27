@@ -18,12 +18,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body>
+      <body className="">
         <ReduxProvider>
           <div className="fixed w-full z-10">
             <Navbar />
           </div>
-          <main className="pt-16">{children}</main>
+          <main className="pt-16 bg-gray-200">{children}</main>
         </ReduxProvider>
       </body>
     </html>

@@ -47,20 +47,20 @@ export default function UploadZone() {
       "application/pdf": [".pdf"],
       "image/*": [".png", ".jpg", ".jpeg"],
     },
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: 50 * 1024 * 1024,
     multiple: false,
   });
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold text-center">
+        <h1 className="text-4xl md:text-4xl sm:text-[10px] font-semibold text-center">
           Online EXCEL, PDF and Data Image to CHART Converter
         </h1>
       </div>
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center m-auto cursor-pointer w-[600px] transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-8 sm:px-5 md:px-5 text-center m-auto cursor-pointer w-auto lg:w-[600px] xl:w-[600px] transition-colors bg-gray-50 shadow hover:shadow-lg ${
           isDragActive
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 hover:border-blue-400"

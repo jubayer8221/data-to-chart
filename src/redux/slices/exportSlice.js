@@ -10,8 +10,16 @@ const exportSlice = createSlice({
   initialState,
   reducers: {
     requestExport: (state, action) => {
-      state.exportFormat = action.payload; // 'pdf' or 'image'
-      state.exportRequested = true;
+      const format = action.payload;
+      if (format === "pdf" || format === "image") {
+        state.exportFormat = format;
+        state.exportRequested = true;
+      } else {
+        console.warn(`Invalid export format requested: ${format}`);
+      }
+    },
+    completeExport: (state) => {
+      state.exportRequested = false;
     },
     resetExport: (state) => {
       state.exportFormat = null;
@@ -20,5 +28,5 @@ const exportSlice = createSlice({
   },
 });
 
-export const { requestExport, resetExport } = exportSlice.actions;
+export const { requestExport, completeExport, resetExport } = exportSlice.actions;
 export default exportSlice.reducer;
